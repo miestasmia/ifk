@@ -26,7 +26,7 @@
 
     % Ĉu estas ĉiujara kalendaro?
     \ifthenelse{\equal{\jaro}{}}{}{
-        \node[gray,anchor=west] at (277/7*6 mm + 13mm, 168mm - 135/4mm) {\thedateday-a de  \datemonthname};
+        \node[gray,anchor=west] at (277/7*6 mm + 13mm, 168mm - 135/4mm) {\thedateday-a de \datemonthname};
         \nextdate
     }
 }
@@ -51,13 +51,16 @@
 
             % Nomo de la monato, eble jaro kaj nomo de la kalendaro
             \node [anchor=north west,align=left] at (10mm,190mm) {
-                \xsize{80}{\monato\ \jaro}
-                \minibox{
-                    \\[-.25em]
-                    \xsize{20}{Internacia} \\[.4em]
-                    \xsize{20}{Fiksita} \\[.4em]
-                    \xsize{20}{Kalendaro}
-                }
+                \xsize{80}{\monato{} \jaro}
+                \hspace{-.5em}
+                \ifthenelse{\equal{\monato}{Januaro}}{
+                    \minibox{
+                        \\[-.25em]
+                        \xsize{20}{Internacia} \\[.4em]
+                        \xsize{20}{Fiksita} \\[.4em]
+                        \xsize{20}{Kalendaro}
+                    }
+                }{}
             };
 
             % LINIOJ
