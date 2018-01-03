@@ -1,0 +1,124 @@
+\documentclass[a4paper,class=article,tikz,border=0pt]{standalone}
+
+\usepackage[pass,a4paper]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{tikz}
+\usepackage{anyfontsize}
+\usepackage{arrayjob}
+\usepackage{calculator}
+\usepackage{ifthen}
+\usepackage{datenumber}
+\usepackage{minibox}
+
+\input{datenumberesperanto.ldf}
+
+\newarray\semajno
+\readarray{semajno}{dimanĉo&lundo&mardo&merkredo&ĵaŭdo&vendredo&sabato}
+
+\newcommand\xsize[2]{\fontsize{#1}{
+    \MULTIPLY{#1}{1.2}{\distanco}
+    \distanco
+}\selectfont#2}
+\newcommand\kromtago[1]{
+    \node at (277/7*6 mm + 10mm + 277mm / 2 / 7, 204mm - 135/4mm) {\Large\textbf{#1}};
+    \node [anchor=west] at (13mm + 277/7*6 mm, 194mm - 135/4mm) {\Large 29};
+    \draw[gray] (277/7*6 mm + 10mm, 200mm - 135/4 mm) -- (287mm, 200mm - 135/4 mm);
+
+    % Ĉu estas ĉiujara kalendaro?
+    \ifthenelse{\equal{\jaro}{}}{}{
+        \node[gray,anchor=west] at (277/7*6 mm + 13mm, 168mm - 135/4mm) {\thedateday-a de  \datemonthname};
+        \nextdate
+    }
+}
+
+% Ŝanĝu ĉi tion al nenio por havi ĉiujaran kalendaron. Alie, ŝanĝu al la jaro de la kalendaro
+\newcommand\jaro{2018}
+
+\newcounter{semajnnumero}
+
+\begin{document}
+    \fontfamily{qag}\selectfont
+
+    % Se ne malplena
+    \ifthenelse{\equal{\jaro}{}}{}{
+        \setdate{\jaro}{1}{1}
+    }
+
+    \foreach \monato in {Januaro,Februaro,Marto,Aprilo,Majo,Junio,Sunio,Julio,Aŭgusto,Septembro,Oktobro,Novembro,Decembro}{
+        \begin{tikzpicture}
+            % Fono
+            \draw[transparent] (0,0) rectangle (297mm,210mm);
+
+            % Nomo de la monato, eble jaro kaj nomo de la kalendaro
+            \node [anchor=north west,align=left] at (10mm,190mm) {
+                \xsize{80}{\monato\ \jaro}
+                \minibox{
+                    \\[-.25em]
+                    \xsize{20}{Internacia} \\[.4em]
+                    \xsize{20}{Fiksita} \\[.4em]
+                    \xsize{20}{Kalendaro}
+                }
+            };
+
+            % LINIOJ
+            % Vertikalaj linioj
+            \foreach \x in {0,...,7} {
+                %\draw[gray] (10mm + 277/7*\x mm, 145mm) -- (10mm + 277/7*\x mm, 10mm);
+            }
+
+            \foreach \y in {0,...,4} {
+                % Horizontalaj linioj
+                \draw[gray] (10mm, 10mm + 135mm - 135/4*\y mm) -- (287mm, 10mm + 135mm - 135/4*\y mm);
+
+                % Numero de la semajno
+                \ifthenelse{\y>0}{
+                    \stepcounter{semajnnumero}
+                    \draw[gray,fill=white] (11mm, 10mm + 1.25*135mm - 135/4*\y mm) circle[radius=3mm] node {\thesemajnnumero};
+                }{}
+            }
+
+            % ALIAJ INFORMOJ
+            % Tago de la semajno
+            \foreach \x in {1,...,7} {
+                \node at (10mm + 277/7*\x mm - 277mm / 2 / 7, 150mm) {\Large\textbf{\semajno(\x)}};
+            }
+
+            \foreach \n in {0,...,27} {
+                % Tago de la monato
+                \ADD{\n}{1}{\N}
+                \INTEGERDIVISION{\n}{7}{\line}{\xmod}
+                \node [anchor=west] at (15mm + 277/7*\xmod mm, 140mm - 135/4*\line mm) {\large\N};
+
+                % Ekvivalenta Gregoria tago
+                \ifthenelse{\equal{\jaro}{}}{}{
+                    \node[gray,anchor=west] at (15mm + 277/7*\xmod mm, 115mm - 135/4*\line mm) {\thedateday-a de \datemonthname};
+                    \nextdate
+                }
+            }
+
+            % KROMTAGOJ
+            % Supertago
+            \ifthenelse{\equal{\monato}{Junio}}{
+                % Ĉu estas superjaro
+                \MODULO{\thedateyear}{4}{\xmodUNU}
+                \MODULO{\thedateyear}{100}{\xmodDU}
+                \MODULO{\thedateyear}{400}{\xmodTRI}
+                \ifthenelse{\equal{\xmodUNU}{0}\AND\NOT\equal{\xmodDU}{0}\OR\equal{\xmodTRI}{0}}{
+                    % Jes
+                    \kromtago{supertago}
+                }{
+                    % Ne
+                    % Sed ĉu estas ĉiujara kalendaro?
+                    \ifthenelse{\equal{\jaro}{}}{
+                        \kromtago{supertago}
+                    }{}
+                }
+            }{}
+
+            % Jartago
+            \ifthenelse{\equal{\monato}{Decembro}}{
+                \kromtago{jartago}
+            }{}
+        \end{tikzpicture}
+    }
+\end{document}
